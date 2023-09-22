@@ -1,5 +1,5 @@
 import { StatisticsCard } from '@/components/organisms';
-import { ENV } from '@/utils/env';
+import { ENV } from '@/utils';
 import { useData } from '@/utils';
 import { useMemo } from 'react';
 import { UserResponse } from '@/type';
