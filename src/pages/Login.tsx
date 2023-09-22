@@ -50,7 +50,7 @@ export const Login: React.FC = () => {
   return (
     <div className="flex flex-col bg-clip-border rounded-xl bg-white shadow-lg absolute top-2/4 left-2/4 w-full max-w-[24rem] -translate-y-2/4 -translate-x-2/4">
       <div className="relative bg-clip-border mx-4 rounded-xl overflow-hidden shadow-md -mt-6 mb-4 grid h-28 place-items-center">
-        <img src="/src/assets/img/logo.png" className="w-[180px]" alt="logo"/>
+        <img src="/assets/img/logo.png" className="w-[180px]" alt="logo"/>
       </div>
       <div className="p-6 flex flex-col gap-4">
         <div className="relative w-full min-w-[200px] h-11">
