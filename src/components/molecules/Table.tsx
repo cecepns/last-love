@@ -58,7 +58,7 @@ export const Table: React.FC<TableProps> = memo(({
     }
     return [];
    
-  }, [columns, data, searchTerm]);
+  }, [columns, data, getNestedValue, searchTerm]);
 
   const columnsExcel = useMemo(() => columns.map(item => item.accessor).filter(x => x !== 'no') ?? [], [columns]);
   
