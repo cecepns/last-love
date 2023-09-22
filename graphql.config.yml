@@ -1,0 +1,29 @@
+overwrite: true
+schema:
+  - https://rohd0c5rac.execute-api.eu-west-2.amazonaws.com/carrywise/graphql
+documents:
+  - src/graphql/**/*.ts
+
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable eslint-comments/no-unlimited-disable */'
+      - add:
+          content: '/* eslint-disable */'
+      - add:
+          content: '// THIS IS A GENERATED FILE, use `yarn codegen` to regenerate'
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      reactApolloVersion: 3
+      withHooks: true
+      skipTypename: false
+      withHOC: false
+      withComponent: false
+      preResolveTypes: true
+      fragmentsSpread: true
+      scalars:
+        ID: string
+    overwrite: true,

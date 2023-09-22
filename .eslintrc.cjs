@@ -1,0 +1,53 @@
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['react', 'react-hooks', 'import'],
+  extends: [
+    'prettier',
+    'plugin:@typescript-eslint/recommended',
+  ],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  rules: {
+    camelcase: 'off',
+    strict: 'warn',
+    quotes: [2, 'single'],
+    'react/prop-types': 'off',
+    'react/no-unused-prop-types': 'off',
+    'react/function-component-definition': 'off',
+    'react/require-default-props': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'react/jsx-filename-extension': [
+      1,
+      { extensions: ['.js', '.jsx', '.tsx'] },
+    ],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: ['../*'],
+      },
+    ],
+    'no-console': 'off',
+    'indent': ['error', 2],
+    'object-curly-spacing': ['error', 'always'],
+    'semi': ['error', 'always'],
+    'comma-spacing': 'error',
+    'no-multi-spaces': 'error',
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
+    'eol-last': 'error',
+    'no-void': 'off',
+    'no-use-before-define': 'off',
+    'no-multi-spaces': ['error'],
+    'no-unresolved': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-explicit-any': ['error'],
+    '@typescript-eslint/no-non-null-assertion': ['error'],
+    '@typescript-eslint/no-unused-vars': ['error'],
+    'import/namespace': [2, { allowComputed: true }],
+  },
+};
