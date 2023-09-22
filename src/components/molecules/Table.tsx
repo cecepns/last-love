@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useRef, useState } from 'react';
-import { Button, Icon, Typography } from '@/components/atoms';
+import { Button, Icon, Loading, Typography } from '@/components/atoms';
 import { Input } from '@/components/molecules';
 import { convertToExcel } from '@/utils';
 import { generatePaginationNumbers } from '@/utils/generatePaginationNumbers';
@@ -17,6 +17,7 @@ export interface TableProps {
   totalPages?: number;
   page?: number;
   isConvertExcel?: boolean;
+  loading?: boolean;
   setCurrentPage?: (value:number) => void;
 }
 
@@ -26,6 +27,7 @@ export const Table: React.FC<TableProps> = memo(({
   totalPages,
   page,
   setCurrentPage,
+  loading = false,
   isConvertExcel = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,7 +85,7 @@ export const Table: React.FC<TableProps> = memo(({
   );
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative min-h-[330px]">
       <div className="p-6 overflow-x-scroll px-0 pt-0 pb-2">
         <div className="flex justify-end items-center my-5 space-x-4">
           {isConvertExcel && <Button onClick={() => convertToExcel(columnsExcel, bodyExcel)} variant="success" className="rounded"> <Icon name="file-excel"/> </Button>}
@@ -143,6 +145,8 @@ export const Table: React.FC<TableProps> = memo(({
           ))}
         </div>
       </div>
+      
+      {loading && <Loading className="absolute top-0 w-full h-full" fullScreen={false}/>}
     </div>
   );
 });

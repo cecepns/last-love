@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 
 export const useData = <T = undefined>(url: string) => {
   const [state, setState] = useState<T>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const dataFetch = async () => {
+      setLoading(true);
       try {
         const response = await fetch(url, {
           headers: {
@@ -20,9 +22,12 @@ export const useData = <T = undefined>(url: string) => {
         }
 
         const data = await response.json();
-  
+        
+        setLoading(false);
         setState(data);
       } catch (error) {
+
+        setLoading(false);
         console.log(error);
       }
     };
@@ -30,5 +35,5 @@ export const useData = <T = undefined>(url: string) => {
     dataFetch();
   }, [url]);
 
-  return { data: state };
+  return { data: state, loading };
 };

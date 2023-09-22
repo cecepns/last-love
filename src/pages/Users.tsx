@@ -10,7 +10,7 @@ import { Table } from '@/components/molecules';
 export const Users: React.FC = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { data } = useData<UserResponse>(`${ENV.API_URL}/v1/users?page=${page}&limit=10`);
+  const { data, loading } = useData<UserResponse>(`${ENV.API_URL}/v1/users?page=${page}&limit=10`);
 
   const users = useMemo(()=> data?.users ?? [], [data?.users]);
   const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
@@ -56,7 +56,9 @@ export const Users: React.FC = () => {
 
   const tableConfig = {
     columns: columnsCarrier,
+    data: users,
     page,
+    loading,
     totalPages,
     setCurrentPage: (val: number) => handleChangePage(val)
   };
@@ -67,7 +69,7 @@ export const Users: React.FC = () => {
         <Typography>
           Data Users
         </Typography>
-        <Table {...tableConfig} data={users}/>
+        <Table {...tableConfig}/>
       </div>
 
     </div> 
