@@ -132,6 +132,7 @@ export const Table: React.FC<TableProps> = memo(({
                 <span className="mx-1">...</span>
               ) : (
                 <button
+                  disabled={loading}
                   onClick={() => changePage(pageNumber)}
                   className={classNames('rounded-md w-[30px] h-[30px] cursor-pointer mx-1', {
                     'text-white bg-primary font-semibold': page === pageNumber,
