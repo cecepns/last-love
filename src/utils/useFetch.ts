@@ -17,6 +17,7 @@ export const useData = <T = undefined>(url: string) => {
         if (!response.ok) {
           if(response.status === 403) {
             localStorage.removeItem('sessionToken');
+            window.location.reload();
           }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
