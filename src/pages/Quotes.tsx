@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import imageCompression from 'browser-image-compression';
 
 import { Button, Typography } from '@/components/atoms';
-import { Input, Table } from '@/components/molecules';
+import { Table } from '@/components/molecules';
 import { ENV, useData } from '@/utils';
 import { Quote, QuotesResponse } from '@/type';
 import Modal from '@/components/molecules/Modal';
