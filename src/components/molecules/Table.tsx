@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Icon, Loading, Typography } from '@/components/atoms';
 import { Input } from '@/components/molecules';
 import { convertToExcel } from '@/utils';
@@ -33,7 +33,13 @@ export const Table: React.FC<TableProps> = memo(({
   const [searchTerm, setSearchTerm] = useState('');
   const tableRef = useRef(null);
   
-  const getNestedValue = (obj:any, accessor:string, idx:number, currentPage = page ?? 1, itemsPerPage = 10) => {
+  const getNestedValue = useCallback((
+    obj:any,
+    accessor:string,
+    idx:number,
+    currentPage = page ?? 1,
+    itemsPerPage = 10
+  ) => {
     const keys = accessor.split('.');
   
     return keys.reduce((result, key) => {
@@ -43,7 +49,7 @@ export const Table: React.FC<TableProps> = memo(({
       }
       return result[key] || '-';
     }, obj);
-  };
+  }, [page]);
 
   const filteredData = useMemo(() => {
     if(data) {
@@ -124,6 +130,10 @@ export const Table: React.FC<TableProps> = memo(({
             ))}
           </tbody>
         </table>
+
+        {filteredData.length < 1 && !loading && (
+          <div className="text-center my-10"> No data </div>
+        )}
 
         <div className="flex space-x-2 mt-10 justify-end">
           {visiblePaginationNumbers.map((pageNumber, index) => (

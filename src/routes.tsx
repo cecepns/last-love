@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Questions, Login, Users, UserDetail } from '@/pages';
+import { Home, Questions, Login, Users, UserDetail, Quotes } from '@/pages';
 import { Icon } from '@/components/atoms';
 
 export interface PageRoutes {
@@ -35,6 +35,12 @@ export const routes: Layout[] = [
         name: 'users detail',
         path: '/users/:uid',
         element: <UserDetail />,
+      },
+      {
+        icon: <Icon type="solid" name="image-polaroid" className="text-white"/>,
+        name: 'quotes',
+        path: '/quotes',
+        element: <Quotes />,
       },
       {
         icon: <Icon type="solid" name="user" className="text-white"/>,

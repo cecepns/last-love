@@ -3,3 +3,4 @@ export * from './Login';
 export * from './Users';
 export * from './UserDetail';
 export * from './Questions';
+export * from './Quotes';

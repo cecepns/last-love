@@ -33,6 +33,7 @@ export const Login: React.FC = () => {
 
         const user = userCredential.user;
         user.getIdToken(true).then((token) => {
+          console.log(token);
           localStorage.setItem('sessionToken', token);
           localStorage.setItem('sessionAccount', JSON.stringify(userCredential));
           navigate('/dashboard/home');
