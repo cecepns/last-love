@@ -44,7 +44,6 @@ export const Table: React.FC<TableProps> = memo(({
   
     return keys.reduce((result, key) => {
       if (key === 'no') {
-      // Calculate the row number based on the current page and items per page
         return (currentPage - 1) * itemsPerPage + idx + 1;
       }
       return result[key] || '-';

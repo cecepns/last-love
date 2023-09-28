@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const useData = <T = undefined>(url: string) => {
   const [state, setState] = useState<T>();
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const dataFetch = async () => {
@@ -17,7 +19,7 @@ export const useData = <T = undefined>(url: string) => {
         if (!response.ok) {
           if(response.status === 403) {
             localStorage.removeItem('sessionToken');
-            window.location.reload();
+            navigate('auth/signin');
           }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -34,7 +36,7 @@ export const useData = <T = undefined>(url: string) => {
     };
 
     dataFetch();
-  }, [url]);
+  }, [navigate, url]);
 
   return { data: state, loading };
 };

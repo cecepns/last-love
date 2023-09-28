@@ -51,6 +51,7 @@ export const Quotes: React.FC = () => {
     data: quotes,
     page,
     loading,
+    totalPages: data?.totalPages,
     setCurrentPage: (val: number) => handleChangePage(val)
   };
 
