@@ -31,7 +31,7 @@ export const Sidenav: React.FC<SidenavProps> = memo(({ routes }) => {
         className="relative border-b border-white/20"
       >
         <Link to="/dashboard/home" className="flex items-center gap-4 py-6 px-8">
-          <img src="/assets/img/logo-dashboard.png" className="w-full" alt="logo"/>
+          <img src="/assets/img/logo-dashboard.png" className="w-full p-3" alt="logo"/>
         </Link>
         <Button 
           className="w-8 max-w-[32px] h-8 max-h-[32px] absolute right-0 top-2 grid rounded-br-none rounded-tl-none xl:hidden"
