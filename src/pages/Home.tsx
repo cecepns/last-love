@@ -44,16 +44,16 @@ export const Home: React.FC = () => {
         />
         <StatisticsCard
           title="Total Female"
-          icon="user"
+          icon="user-vneck-hair-long"
           value={totalGender.female}
           color="green"
         />
-        <StatisticsCard
+        {/* <StatisticsCard
           title="Total LGBTQIA"
           icon="user"
           value={totalGender.lgbtqia}
           color="green"
-        />
+        /> */}
       </div>
     </div> 
   );
