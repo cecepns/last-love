@@ -13,7 +13,7 @@ export const Home: React.FC = () => {
   const totalQuotes = useMemo(()=> dataQuotes?.totalQuotes ?? 0, [dataQuotes?.totalQuotes]);
   const totalUsers = useMemo(()=> data?.totalUsers ?? 0, [data?.totalUsers]);
   const totalQuestion = useMemo(()=> dataQuestion?.totalQuestions ?? 0, [dataQuestion?.totalQuestions]);
-  const totalGender = useMemo(()=> dataGender ?? { male: '', female: '', lgbtqia: '' }, [dataGender]);
+  const totalGender = useMemo(()=> dataGender ?? { male: 0, female: 0, lgbtqia: 0 }, [dataGender]);
 
   return (
     <div className="mt-12">
