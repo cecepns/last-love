@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
+
 import { StatisticsCard } from '@/components/organisms';
 import { ENV } from '@/utils';
 import { useData } from '@/utils';
-import { useMemo } from 'react';
 import { Gender, QuestionResponse, QuotesResponse, UserResponse } from '@/type';
 
 export const Home: React.FC = () => {
@@ -21,39 +22,39 @@ export const Home: React.FC = () => {
         <StatisticsCard
           title="Total Users"
           icon="users"
-          value={totalUsers}
-          color="green"
+          value={(totalUsers - 1)}
+          color="purple"
         />
         <StatisticsCard
           title="Total Questions"
           icon="question"
           value={totalQuestion}
-          color="green"
+          color="purple"
         />
         <StatisticsCard
           title="Total Quotes"
           icon="image-polaroid"
           value={totalQuotes}
-          color="green"
+          color="purple"
         />
         <StatisticsCard
           title="Total Male"
           icon="user"
           value={totalGender.male}
-          color="green"
+          color="purple"
         />
         <StatisticsCard
           title="Total Female"
           icon="user-vneck-hair-long"
           value={totalGender.female}
-          color="green"
+          color="purple"
         />
-        {/* <StatisticsCard
-          title="Total LGBTQIA"
-          icon="user"
+        <StatisticsCard
+          title="Total LGBTQIA+"
+          icon="heart"
           value={totalGender.lgbtqia}
-          color="green"
-        /> */}
+          color="purple"
+        />
       </div>
     </div> 
   );

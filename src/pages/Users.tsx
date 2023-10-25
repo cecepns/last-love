@@ -12,8 +12,10 @@ export const Users: React.FC = () => {
   const navigate = useNavigate();
   const { data, loading } = useData<UserResponse>(`${ENV.API_URL}/v1/users?page=${page}&limit=10`);
 
-  const users = useMemo(()=> data?.users ?? [], [data?.users]);
+  const users = useMemo(()=> data?.users.filter((v) => v.email !== 'admin.lastlove@gmail.com') ?? [], [data?.users]);
   const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
+
+  console.log(users);
 
   const handleShowDetail = useCallback((value: string) => {
     navigate('/dashboard/users/' + value);

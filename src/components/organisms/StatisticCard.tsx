@@ -15,6 +15,7 @@ export type Color =
  | 'blue'
  | 'green'
  | 'pink'
+ | 'purple'
   
 export const StatisticsCard: React.FC<StatisticsCardProps> = memo(({ color = 'pink', icon = 'house', title, value }) => {
   
@@ -22,6 +23,7 @@ export const StatisticsCard: React.FC<StatisticsCardProps> = memo(({ color = 'pi
     'bg-gradient-to-tr from-pink-600 to-pink-400 from-pink-600 to-pink-400 shadow-pink-500/40': color === 'pink',
     'bg-gradient-to-tr from-blue-600 to-blue-400 from-blue-600 to-blue-400 shadow-blue-500/40': color === 'blue',
     'bg-gradient-to-tr from-green-600 to-green-400 from-green-600 to-green-400 shadow-green-500/40': color === 'green',
+    'bg-gradient-to-br from-primary-700 to-primary shadow-primary-500/40': color === 'purple',
   });
     
   return (
