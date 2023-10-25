@@ -8,3 +8,9 @@ export interface QuotesResponse {
   totalPages: number;
   totalQuotes: number;
 }
+
+export interface Gender {
+  male: number;
+  female: number;
+  lgbtqia: number;
+}

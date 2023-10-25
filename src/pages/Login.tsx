@@ -31,9 +31,12 @@ export const Login: React.FC = () => {
       .then((userCredential: UserCredential) => {
         setLoading(false);
 
-        const user = userCredential.user;
+        const { user } = userCredential;
+
         user.getIdToken(true).then((token) => {
-          console.log(token);
+          // console.log(token);
+          console.log(user);
+          console.log(userCredential);
           localStorage.setItem('sessionToken', token);
           localStorage.setItem('sessionAccount', JSON.stringify(userCredential));
           navigate('/dashboard/home');
@@ -42,8 +45,8 @@ export const Login: React.FC = () => {
       })
       .catch((error) => {
         setLoading(false);
-        const errorMessage = error.message;
-        alert(errorMessage);
+        const { message } = error;
+        alert(message);
         
       });
   }, [form.email, form.password, navigate, setSesstion]);

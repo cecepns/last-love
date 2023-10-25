@@ -8,7 +8,7 @@ import { Icon } from '@/components/atoms';
 
 export const UserDetail: React.FC = () => {
   const params = useParams();
-  const { data } = useData<UserDetailResponse>(`${ENV.API_URL}/v1/users/${params.uid}`);
+  const { data } = useData<UserDetailResponse>(`${ENV.API_URL}/v1/users/get/${params.uid}`);
   
   const user = useMemo(() => data?.user, [data?.user]);
 

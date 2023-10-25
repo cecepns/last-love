@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import imageCompression from 'browser-image-compression';
 
-import { Button, Typography } from '@/components/atoms';
+import { Typography } from '@/components/atoms';
 import { Table } from '@/components/molecules';
 import { ENV, useData } from '@/utils';
 import { Quote, QuotesResponse } from '@/type';
@@ -38,9 +38,9 @@ export const Quotes: React.FC = () => {
     setPage(val);
   }, []);
 
-  const openModal = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
+  // const openModal = useCallback(() => {
+  //   setIsModalOpen(true);
+  // }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -87,9 +87,9 @@ export const Quotes: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="w-full flex justify-end">
+      {/* <div className="w-full flex justify-end">
         <Button onClick={openModal}> Add quotes</Button>
-      </div>
+      </div> */}
 
       <Table {...tableConfig}/>
 
