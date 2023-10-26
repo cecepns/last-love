@@ -12,7 +12,15 @@ export const Home: React.FC = () => {
   const { data: dataGender } = useData<Gender>(`${ENV.API_URL}/v1/users/gender`);
   
   const totalQuotes = useMemo(()=> dataQuotes?.totalQuotes ?? 0, [dataQuotes?.totalQuotes]);
-  const totalUsers = useMemo(()=> data?.totalUsers ?? 0, [data?.totalUsers]);
+  const totalUsers = useMemo(()=> {
+    if(data?.totalUsers) {
+      if(data?.totalUsers > 0) {
+        return (data?.totalUsers - 1);
+      }
+      return 0;
+    }
+    return 0;
+  }, [data?.totalUsers]);
   const totalQuestion = useMemo(()=> dataQuestion?.totalQuestions ?? 0, [dataQuestion?.totalQuestions]);
   const totalGender = useMemo(()=> dataGender ?? { male: 0, female: 0, lgbtqia: 0 }, [dataGender]);
 
@@ -22,7 +30,7 @@ export const Home: React.FC = () => {
         <StatisticsCard
           title="Total Users"
           icon="users"
-          value={(totalUsers - 1)}
+          value={totalUsers}
           color="purple"
         />
         <StatisticsCard

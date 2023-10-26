@@ -15,8 +15,6 @@ export const Users: React.FC = () => {
   const users = useMemo(()=> data?.users.filter((v) => v.email !== 'admin.lastlove@gmail.com') ?? [], [data?.users]);
   const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
 
-  console.log(users);
-
   const handleShowDetail = useCallback((value: string) => {
     navigate('/dashboard/users/' + value);
   }, [navigate]);

@@ -33,8 +33,11 @@ export const Login: React.FC = () => {
 
         const { user } = userCredential;
 
+        if(user.email === 'admin.lastlove@gmail.com') {
+          return alert('you don\'t have access');
+        }
+
         user.getIdToken(true).then((token) => {
-          console.log(token);
           // console.log(user);
           // console.log(userCredential);
           localStorage.setItem('sessionToken', token);
