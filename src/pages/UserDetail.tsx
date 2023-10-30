@@ -40,6 +40,8 @@ export const UserDetail: React.FC = () => {
     return <Loading />;
   }
 
+  console.log(user);
+
   return (
     <div className="mt-5 grid md:grid-cols-2 gap-2">
       <div className="bg-white p-8 rounded-lg shadow-md">
@@ -53,7 +55,7 @@ export const UserDetail: React.FC = () => {
           <p className="text-gray-500 text-sm mt-2">{user?.email || 'Email -'}</p>
         </div>
         <div className="space-y-4">
-          <p className="text-gray-500 text-sm">{user?.isVerified === 'false' ? <Icon type="solid" name="circle-x" className="text-primary"/> : <Icon type="solid" name="badge-check" className="text-red-700"/>} Is verified</p>
+          <p className="text-gray-500 text-sm">{user?.isVerified === 'false' ? <Icon type="solid" name="circle-x" className="text-red-700"/> : <Icon type="solid" name="badge-check" className="text-primary"/>} Is verified</p>
           <p className="text-gray-500 text-sm">{user?.isPaid ? <Icon name="badge-check" type="solid" className="text-primary"/> : <Icon name="circle-x" type="solid" className="text-red-700"/>} Is paid</p>
           <p className="text-gray-500 text-sm">{user?.openQuestionCompleted ? <Icon name="badge-check" type="solid" className="text-primary"/> : <Icon name="circle-x" type="solid" className="text-red-700"/>} Open question completed</p>
           <p className="text-gray-500 text-sm">{user?.questionCompleted ? <Icon name="badge-check" type="solid" className="text-primary"/> : <Icon name="circle-x" type="solid" className="text-red-700"/>} Question completed</p>
