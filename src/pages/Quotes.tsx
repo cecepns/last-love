@@ -6,7 +6,7 @@ import { Typography } from '@/components/atoms';
 import { Table } from '@/components/molecules';
 import { ENV, useData } from '@/utils';
 import { Quote, QuotesResponse } from '@/type';
-import Modal from '@/components/molecules/Modal';
+import { Modal } from '@/components/molecules';
 // import { generateUniqueRandomString } from '@/utils';
 
 export const Quotes: React.FC = () => {
