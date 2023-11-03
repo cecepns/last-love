@@ -8,7 +8,9 @@ interface InputProps {
   inputClassName?: string;
   className?: string;
   type?: string;
+  isTextArea?: boolean;
   icon?: React.ReactNode;
+  onFocus?: () => void;
 }
 
 export const Input: React.FC<InputProps> = memo(({
@@ -17,8 +19,10 @@ export const Input: React.FC<InputProps> = memo(({
   onChange,
   icon,
   className,
+  isTextArea = false,
   type = 'text',
-  inputClassName
+  inputClassName,
+  ...props
 }) => {
 
   const handleInputChange = useCallback(
@@ -27,6 +31,15 @@ export const Input: React.FC<InputProps> = memo(({
         onChange(event.target.value);
       }
     }, [onChange]);
+
+  const handleTextAreaChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (onChange) {
+        onChange(event.target.value);
+      }
+    },
+    [onChange]
+  );
 
   const wrapperClass = classNames(
     'relative w-full min-w-[200px] h-10', {
@@ -43,14 +56,25 @@ export const Input: React.FC<InputProps> = memo(({
 
   return (
     <div className={wrapperClass}>
-      <input
+      {!isTextArea ? (
+        <input
+          className={inputClass}
+          id={label}
+          type={type}
+          value={value}
+          onChange={handleInputChange}
+          placeholder=" "
+          {...props}
+        />
+      ) : <textarea
         className={inputClass}
         id={label}
-        type={type}
+        rows={10}
         value={value}
-        onChange={handleInputChange}
+        onChange={handleTextAreaChange}
         placeholder=" "
-      />
+        {...props}
+      />}
       <label className={labelClass} htmlFor={label}>
         {label}
       </label>

@@ -14,6 +14,15 @@ export interface User {
 	videoThumbnail: string;
 }
 
+export interface UserNotif {
+	value: string;
+	label: string;
+}
+
+export interface UserResponseNotif {
+	users: UserNotif[];
+  }
+
 export interface UserResponse {
   users: User[];
   totalPages: number;

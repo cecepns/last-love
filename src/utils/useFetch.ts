@@ -29,9 +29,7 @@ export const useData = <T = undefined>(url: string) => {
         setLoading(false);
         setState(data);
       } catch (error) {
-
         setLoading(false);
-        console.log(error);
       }
     };
 
@@ -40,3 +38,24 @@ export const useData = <T = undefined>(url: string) => {
 
   return { data: state, loading };
 };
+
+export async function usePostData<T>(url: string, data: unknown): Promise<T> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('sessionToken')}`
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+}

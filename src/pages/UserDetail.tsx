@@ -40,8 +40,6 @@ export const UserDetail: React.FC = () => {
     return <Loading />;
   }
 
-  console.log(user);
-
   return (
     <div className="mt-5 grid md:grid-cols-2 gap-2">
       <div className="bg-white p-8 rounded-lg shadow-md">

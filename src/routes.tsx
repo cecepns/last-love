@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Questions, Login, Users, UserDetail, Quotes } from '@/pages';
+import { Home, Questions, Login, Users, UserDetail, Quotes, SendNotification } from '@/pages';
 import { Icon } from '@/components/atoms';
 
 export interface PageRoutes {
@@ -47,6 +47,12 @@ export const routes: Layout[] = [
         name: 'questions',
         path: '/questions',
         element: <Questions />,
+      },
+      {
+        icon: <Icon type="solid" name="bell" className="text-white"/>,
+        name: 'send notification',
+        path: '/send-notification',
+        element: <SendNotification />,
       },
     ],
   },
