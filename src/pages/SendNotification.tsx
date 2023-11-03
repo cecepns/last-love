@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import { Button, Loading } from '@/components/atoms';
 import { Input } from '@/components/molecules';
@@ -65,7 +65,7 @@ export const SendNotification: React.FC = () => {
     }    
   }, [form]);
 
-  const handleSelectAll = useCallback((v: React.nativ) => {
+  const handleSelectAll = useCallback((v: ChangeEvent<HTMLInputElement>) => {
     if(v.target.checked) {
       setListUsers(users);
       setIsChecked(true);
@@ -79,7 +79,7 @@ export const SendNotification: React.FC = () => {
     }
   }, [users]);
 
-  const MyOption = useCallback((props) => {
+  const MyOption = useCallback((props:any) => {
     const { innerProps, innerRef } = props;
     if (props.value === 'selectall') {
       return <div className="px-3 py-2">
