@@ -33,7 +33,7 @@ export const Login: React.FC = () => {
 
         const { user } = userCredential;
 
-        if(user.email !== 'admin.lastlove@gmail.com') {
+        if(user.email !== 'admin.lastlove@gmail.com' && user.email !== 'am4096@gmail.com') {
           return alert('you don\'t have access');
         }
 
