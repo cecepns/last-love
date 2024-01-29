@@ -30,6 +30,8 @@ export const Users: React.FC = () => {
   const columnDataUsers = useMemo(() => [
     { displayName: 'Email', id: 'email' },
     { displayName: 'Name', id: 'name' },
+    { displayName: 'isPaid', id: 'isPaid' },
+    { displayName: 'isVerified', id: 'isVerified' },
     { displayName: 'Questions & Answeres', id: 'questions' }
   ], []);
 
@@ -100,11 +102,11 @@ export const Users: React.FC = () => {
         return data1;
       });
   
-      const csvData = mergedData.map(({ email, name, pertanyaan }:any) => {
+      const csvData = mergedData.map(({ email, name, isPaid, isVerified, pertanyaan }:any) => {
         const questionsString = Array.isArray(pertanyaan)
           ? pertanyaan.map(({ pertanyaan, jawaban }, index) => `${index + 1}.${pertanyaan} = ${jawaban}`).join(', ')
           : '';
-        return { email, name, questions: questionsString };
+        return { email, name, isPaid, isVerified, questions: questionsString };
       });
   
       setLoadingCsv(false);
