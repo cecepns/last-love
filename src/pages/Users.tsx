@@ -82,14 +82,17 @@ export const Users: React.FC = () => {
   const fetchDataFromFirestore = async () => {
     try {
       setLoadingCsv(true);
-      const collection1 = await getDocs(collection(db, 'Users'));
-      const collection2 = await getDocs(collection(db, 'UserInfo'));
+      const users = await getDocs(collection(db, 'Users'));
+      const userInfo = await getDocs(collection(db, 'UserInfo'));
 
-      console.log('collection 1', collection1);
-      console.log('collection 2', collection2);
+      const usersOld = await getDocs(collection(db, 'UsersOld'));
+      const userInfoOld = await getDocs(collection(db, 'UserInfoOld'));
+
+      console.log('collection 1', users);
+      console.log('collection 2', userInfo);
   
-      const newData1:any = collection1.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      const newData2:any = collection2.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
       const mergedData = newData1.map((data1:any) => {
         const matchingData2 = newData2.find((data2:any) => data2.id === data1.uid);
