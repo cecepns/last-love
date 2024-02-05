@@ -14,7 +14,10 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/config';
 
 export const Users: React.FC = () => {
-  const [loadingCsv, setLoadingCsv] = useState<boolean>(false);
+  const [loadingDownloadFile, setloadingDownloadFile] = useState({
+    csv: false,
+    json: false,
+  });
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
@@ -79,18 +82,14 @@ export const Users: React.FC = () => {
     setCurrentPage: (val: number) => handleChangePage(val)
   };
 
-  const fetchDataFromFirestore = async () => {
+  const fetchDataFromFirestore = useCallback(async () => {
     try {
-      setLoadingCsv(true);
       const users = await getDocs(collection(db, 'Users'));
       const userInfo = await getDocs(collection(db, 'UserInfo'));
 
       const usersOld = await getDocs(collection(db, 'UsersOld'));
       const userInfoOld = await getDocs(collection(db, 'UserInfoOld'));
 
-      console.log('collection 1', users);
-      console.log('collection 2', userInfo);
-  
       const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
@@ -111,26 +110,49 @@ export const Users: React.FC = () => {
           : '';
         return { email, name, isPaid, isVerified, questions: questionsString };
       });
-  
-      setLoadingCsv(false);
+
       return csvData;
     } catch (error) {
-      setLoadingCsv(false);
-      console.error('Error fetching collections:', error);
+      setloadingDownloadFile(({ json: false, csv: false }));
       throw error;
     }
-  };
+  }, []);
   
-  const asyncFnComputeDate = async () => {
+  const handleDownloadCsv = useCallback(async () => {
     try {
+      setloadingDownloadFile(prev => ({ ...prev, csv: true }));
       const csvData = await fetchDataFromFirestore();
-      console.log('CSV', csvData);
+      setloadingDownloadFile(prev => ({ ...prev, csv: false }));
       return csvData;
     } catch (error) {
       alert(error);
-      // Handle error appropriately
     }
-  };
+  }, [fetchDataFromFirestore]);
+
+  const handleDownloadJson = useCallback(async () => {
+    try {
+      setloadingDownloadFile(prev => ({ ...prev, json: true }));
+
+      const data = await fetchDataFromFirestore();
+
+      const jsonString = JSON.stringify(data);
+
+      const blob = new Blob([jsonString], { type: 'application/json' });
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = `users-data-${moment().format('DD-MM-YYYY HH:mm')}.json`;
+
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
+
+      document.body.removeChild(downloadLink);
+      setloadingDownloadFile(prev => ({ ...prev, json: false }));
+    } catch (error) {
+      alert(error);
+    }
+  }, [fetchDataFromFirestore]);
 
   return (
     <div className="mt-12">
@@ -141,18 +163,24 @@ export const Users: React.FC = () => {
 
         <div className="relative">
 
-          <CsvDownloader
-            className="absolute z-10 top-[30px] z-index-1"
-            disabled={loadingCsv}
-            datas={asyncFnComputeDate}
-            columns={columnDataUsers}
-            filename={`users-data-${moment().format('DD-MM-YYYY HH:mm')}`}
-          > 
-            <Button disabled={loadingCsv}>
-              {loadingCsv ? 'loading...' : 'Export data' }
-              <Icon name="file-csv"/>
+          <div className="space-x-5 absolute z-10 top-[30px] z-index-1 flex">
+            <CsvDownloader
+              disabled={loadingDownloadFile.csv}
+              datas={handleDownloadCsv}
+              columns={columnDataUsers}
+              filename={`users-data-${moment().format('DD-MM-YYYY HH:mm')}`}
+            > 
+              <Button disabled={loadingDownloadFile.csv}>
+                {loadingDownloadFile.csv ? 'loading...' : 'Export data' }
+                <Icon name="file-csv"/>
+              </Button>
+            </CsvDownloader>
+
+            <Button disabled={loadingDownloadFile.json} onClick={handleDownloadJson}>
+              {loadingDownloadFile.json ? 'Loading...' : 'Download JSON'}
+              <Icon name="file"/>
             </Button>
-          </CsvDownloader>
+          </div>
           
           <Table {...tableConfig}/>
         </div>
