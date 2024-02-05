@@ -5,7 +5,7 @@ import CsvDownloader from 'react-csv-downloader';
 import moment from 'moment';
 
 import { ENV } from '@/utils/env';
-import { useData } from '@/utils';
+import { downloadJson, useData } from '@/utils';
 import { User, UserResponse } from '@/type';
 import { Button, Icon, Typography } from '@/components/atoms';
 import { Table } from '@/components/molecules';
@@ -166,20 +166,9 @@ export const Users: React.FC = () => {
       setloadingDownloadFile(prev => ({ ...prev, json: true }));
 
       const data = await fetchDataFromFirestoreJson();
+      
+      downloadJson(data);
 
-      const jsonString = JSON.stringify(data);
-
-      const blob = new Blob([jsonString], { type: 'application/json' });
-
-      const downloadLink = document.createElement('a');
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = `users-data-${moment().format('DD-MM-YYYY HH:mm')}.json`;
-
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-
-      document.body.removeChild(downloadLink);
       setloadingDownloadFile(prev => ({ ...prev, json: false }));
     } catch (error) {
       alert(error);
