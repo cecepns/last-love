@@ -117,6 +117,38 @@ export const Users: React.FC = () => {
       throw error;
     }
   }, []);
+
+  const fetchDataFromFirestoreJson = useCallback(async () => {
+    try {
+      const users = await getDocs(collection(db, 'Users'));
+      const userInfo = await getDocs(collection(db, 'UserInfo'));
+
+      const usersOld = await getDocs(collection(db, 'UsersOld'));
+      const userInfoOld = await getDocs(collection(db, 'UserInfoOld'));
+
+      const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  
+      const mergedData = newData1.map(({ email, name, isPaid, isVerified, uid }:any) => {
+        const matchingData2 = newData2.find((data2:any) => data2.id === uid);
+
+        return {
+          email,
+          name,
+          isPaid,
+          isVerified,
+          questions: matchingData2?.answeres
+        };
+  
+      });
+
+      return mergedData;
+    
+    } catch (error) {
+      setloadingDownloadFile(({ json: false, csv: false }));
+      throw error;
+    }
+  }, []);
   
   const handleDownloadCsv = useCallback(async () => {
     try {
@@ -133,7 +165,7 @@ export const Users: React.FC = () => {
     try {
       setloadingDownloadFile(prev => ({ ...prev, json: true }));
 
-      const data = await fetchDataFromFirestore();
+      const data = await fetchDataFromFirestoreJson();
 
       const jsonString = JSON.stringify(data);
 
@@ -152,7 +184,7 @@ export const Users: React.FC = () => {
     } catch (error) {
       alert(error);
     }
-  }, [fetchDataFromFirestore]);
+  }, [fetchDataFromFirestoreJson]);
 
   return (
     <div className="mt-12">
