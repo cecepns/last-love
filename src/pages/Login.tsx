@@ -67,7 +67,7 @@ export const Login: React.FC = () => {
           <Input label="Password" type="password" className="h-11" onChange={inputChangeHandler('password')} />
         </div>
         <div className="relative w-full min-w-[200px] h-11">
-          <Button className="h-11 w-full" disabled={loading} onClick={handleLogin}>
+          <Button className="h-11 w-full" disabled={loading || !form.email || !form.password} onClick={handleLogin}>
             {loading ? 'Loading...' : 'Sign in'}
           </Button>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Questions, Login, Users, UserDetail, Quotes, SendNotification } from '@/pages';
+import { Home, Questions, Login, Users, UserDetail, Quotes, SendNotification, ResetPassword } from '@/pages';
 import { Icon } from '@/components/atoms';
 
 export interface PageRoutes {
@@ -64,6 +64,12 @@ export const routes: Layout[] = [
         name: 'signin',
         path: '/signin',
         element: <Login />,
+      },
+      {
+        icon: <Icon type="solid" name="user" className="text-white"/>,
+        name: 'reset-password',
+        path: '/reset-password',
+        element: <ResetPassword />,
       },
     ]
   }
