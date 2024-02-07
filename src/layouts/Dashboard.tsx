@@ -14,13 +14,7 @@ export const Dashboard = ()=> {
     const initFn = async () => {
       const sessionToken = localStorage.getItem('sessionToken');
 
-      if(sessionToken) {
-        const sessionAccount = localStorage.getItem('sessionAccount');
-        if(sessionAccount) {
-          setSesstion(JSON.parse(sessionAccount));
-          navigate('dashboard/home');
-        }
-      } else if (!sessionToken) {
+      if (!sessionToken) {
         localStorage.removeItem('sessionToken');
         localStorage.removeItem('sessionAccount');
         navigate('auth/signin');
