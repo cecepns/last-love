@@ -8,4 +8,14 @@ export default defineConfig({
   resolve: {
     alias: [{ find: '@', replacement: '/src' }],
   },
+  build: {
+    rollupOptions: {
+      external: ['react', 'react-router', 'react-router-dom'],
+      output: {
+        globals: {
+          react: 'React',
+        },
+      },
+    },
+  }
 });
