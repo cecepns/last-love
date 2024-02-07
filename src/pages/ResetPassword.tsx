@@ -32,8 +32,8 @@ export const ResetPassword: React.FC = () => {
         alert('Something is wrong; try again later!');
         console.log('missing oobCode');
       }
-      setLoading(false);
       setForm({ password: '' });
+      setLoading(false);
       alert('Success Reset Password');
     } catch (error) {
       setLoading(false);
@@ -48,7 +48,7 @@ export const ResetPassword: React.FC = () => {
       </div>
       <div className="p-6 flex flex-col gap-4">
         <div className="relative w-full min-w-[200px] h-11">
-          <Input label="New Password" className="h-11" onChange={inputChangeHandler('password')} />
+          <Input value={form.password} label="New Password" className="h-11" onChange={inputChangeHandler('password')} />
         </div>
         <div className="relative w-full min-w-[200px] h-11">
           <Button className="h-11 w-full" disabled={loading} onClick={handleResetPassword}>
