@@ -51,7 +51,7 @@ export const ResetPassword: React.FC = () => {
           <Input value={form.password} label="New Password" className="h-11" onChange={inputChangeHandler('password')} />
         </div>
         <div className="relative w-full min-w-[200px] h-11">
-          <Button className="h-11 w-full" disabled={loading} onClick={handleResetPassword}>
+          <Button className="h-11 w-full" disabled={loading || !form.password} onClick={handleResetPassword}>
             {loading ? 'Loading...' : 'Reset Password'}
           </Button>
         </div>
