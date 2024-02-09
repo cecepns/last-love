@@ -22,7 +22,7 @@ export const Questions: React.FC = () => {
   const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
 
   const columnDataQuestions = useMemo(() => [
-    { displayName: 'Options', id: 'option' },
+    { displayName: 'Options', id: 'options' },
     { displayName: 'Questions', id: 'question' }
   ], []);
 
