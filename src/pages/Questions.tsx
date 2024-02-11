@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import CsvDownloader from 'react-csv-downloader';
 
@@ -7,7 +7,7 @@ import { Question, QuestionResponse } from '@/type';
 import { ENV, downloadJson, useData } from '@/utils';
 import { Table } from '@/components/molecules';
 import moment from 'moment';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getCountFromServer, getDocs, limit, orderBy, query, startAfter } from 'firebase/firestore';
 import { db } from '@/config';
 
 export const Questions: React.FC = () => {
@@ -15,10 +15,22 @@ export const Questions: React.FC = () => {
     csv: false,
     json: false,
   });
-  const [page, setPage] = useState(1);
-  const { data, loading } = useData<QuestionResponse>(`${ENV.API_URL}/v1/questions?page=${page}&limit=10`);
 
-  const questions = useMemo(()=> data?.questions ?? [], [data?.questions]);
+  const [data, setData] = useState<QuestionResponse>({
+    questions: [],
+    totalPages: 0,
+    totalQuestions: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const questions = useMemo(() => {
+    const startIndex = (page - 1) * 10;
+    const endIndex = startIndex + 10;
+    const filteredData = data.questions.slice(startIndex, endIndex);
+    return filteredData;
+  }, [page, data]);
+ 
   const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
 
   const columnDataQuestions = useMemo(() => [
@@ -50,9 +62,36 @@ export const Questions: React.FC = () => {
     },
   ], []);
 
+  useEffect(() => {
+    
+    const fn = async () => {
+      setLoading(true);
+      try {
+        // const coll = collection(db, 'Questions');
+        // const snapshot = await getCountFromServer(coll);
+        // const totalData = snapshot.data().count;
+        // const totalPages = Math.ceil(totalData / 10);
+        
+        const res:any = await getDocs(collection(db, 'Questions'));
+        const questions = res.docs.map((doc:any) => ({ ...doc.data(), id: doc.id }));
+  
+        setData(prev => ({ ...prev, questions, totalPages: Math.ceil(questions.length / 10) }));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log('error', error);
+      }
+
+    };
+
+    fn();
+  }, []);
+
   const handleChangePage = useCallback((val:number) => {
     setPage(val);
   }, []);
+
+  console.log(loading);
 
   const tableConfig = {
     columns: columnsCarrier,
@@ -73,12 +112,12 @@ export const Questions: React.FC = () => {
 
       const raw = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
   
-      const data:any = raw.map(({ question, options }: any) => {
+      const data:any = raw.map(({ id, question, options }: any) => {
         const optionRaw = Object.entries(options)
           .map(([key, value]) => `${parseInt(key) + 1}. ${value}`)
           .join(', ');
   
-        return { question, options: optionRaw };
+        return { id, question, options: optionRaw };
       });
 
       if (name === 'json') {
