@@ -3,18 +3,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { StatisticsCard } from '@/components/organisms';
 import { ENV } from '@/utils';
 import { useData } from '@/utils';
-import { Gender, QuestionResponse, QuotesResponse, UserResponse } from '@/type';
-import { collection, getCountFromServer } from 'firebase/firestore';
+import { QuestionResponse, QuotesResponse, UserResponse } from '@/type';
+import { collection, getCountFromServer, getDocs } from 'firebase/firestore';
 import { db } from '@/config';
 
 export const Home: React.FC = () => {
   const [count, setCount] = useState({
     totalUsers: 0,
+    male: 0,
+    female: 0,
+    lgbt: 0,
   });
   const { data } = useData<UserResponse>(`${ENV.API_URL}/v1/users?page=1&limit=1`);
   const { data: dataQuestion } = useData<QuestionResponse>(`${ENV.API_URL}/v1/questions?page=1&limit=1`);
   const { data: dataQuotes } = useData<QuotesResponse>(`${ENV.API_URL}/v1/quotes?page=1&limit=1`);
-  const { data: dataGender } = useData<Gender>(`${ENV.API_URL}/v1/users/gender`);
   
   const totalQuotes = useMemo(()=> dataQuotes?.totalQuotes ?? 0, [dataQuotes?.totalQuotes]);
   const totalUsers = useMemo(()=> {
@@ -27,15 +29,23 @@ export const Home: React.FC = () => {
     return 0;
   }, [count.totalUsers, data?.totalUsers]);
   const totalQuestion = useMemo(()=> dataQuestion?.totalQuestions ?? 0, [dataQuestion?.totalQuestions]);
-  const totalGender = useMemo(()=> dataGender ?? { male: 0, female: 0, lgbtqia: 0 }, [dataGender]);
 
   useEffect(() => {
     const fn = async () => {
       const coll = collection(db, 'UsersOld');
       const snapshot = await getCountFromServer(coll);
+      
+      const userInfo = await getDocs(collection(db, 'UserInfo'));
+      const userInfoOld = await getDocs(collection(db, 'UserInfoOld'));
+      
+      const usersInfo = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      
       const totalUsersOld = snapshot.data().count;
+      const totalMale = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'Male').length;
+      const totalFemale = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'Female').length;
+      const totalLgbt = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'LGBTQIA+').length;
 
-      setCount(prev => ({ ...prev, totalUsers:totalUsersOld }));
+      setCount({ totalUsers:totalUsersOld, male: totalMale, female: totalFemale, lgbt: totalLgbt });
     };
 
     fn();
@@ -65,19 +75,19 @@ export const Home: React.FC = () => {
         <StatisticsCard
           title="Total Male"
           icon="user"
-          value={totalGender.male}
+          value={count.male}
           color="purple"
         />
         <StatisticsCard
           title="Total Female"
           icon="user-vneck-hair-long"
-          value={totalGender.female}
+          value={count.female}
           color="purple"
         />
         <StatisticsCard
           title="Total LGBTQIA+"
           icon="heart"
-          value={totalGender.lgbtqia}
+          value={count.lgbt}
           color="purple"
         />
       </div>
