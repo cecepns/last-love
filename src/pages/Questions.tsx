@@ -67,11 +67,6 @@ export const Questions: React.FC = () => {
     const fn = async () => {
       setLoading(true);
       try {
-        // const coll = collection(db, 'Questions');
-        // const snapshot = await getCountFromServer(coll);
-        // const totalData = snapshot.data().count;
-        // const totalPages = Math.ceil(totalData / 10);
-        
         const res:any = await getDocs(collection(db, 'Questions'));
         const questions = res.docs.map((doc:any) => ({ ...doc.data(), id: doc.id }));
   
