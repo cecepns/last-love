@@ -4,10 +4,10 @@ import CsvDownloader from 'react-csv-downloader';
 
 import { Button, Icon, Typography } from '@/components/atoms';
 import { Question, QuestionResponse } from '@/type';
-import { ENV, downloadJson, useData } from '@/utils';
+import { downloadJson } from '@/utils';
 import { Table } from '@/components/molecules';
 import moment from 'moment';
-import { collection, getCountFromServer, getDocs, limit, orderBy, query, startAfter } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/config';
 
 export const Questions: React.FC = () => {
