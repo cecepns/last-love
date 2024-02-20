@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CsvDownloader from 'react-csv-downloader';
@@ -35,7 +35,8 @@ export const Users: React.FC = () => {
     { displayName: 'Name', id: 'name' },
     { displayName: 'isPaid', id: 'isPaid' },
     { displayName: 'isVerified', id: 'isVerified' },
-    { displayName: 'Questions & Answeres', id: 'questions' }
+    { displayName: 'Questions & Answeres', id: 'questions' },
+    { displayName: 'Open Questions & Answeres', id: 'openQuestions' },
   ], []);
 
   const columnsCarrier = useMemo(() => [
@@ -93,6 +94,8 @@ export const Users: React.FC = () => {
       const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
+      console.log(newData1);
+
       const mergedData = newData1.map((data1:any) => {
         const matchingData2 = newData2.find((data2:any) => data2.id === data1.uid);
   
@@ -104,11 +107,16 @@ export const Users: React.FC = () => {
         return data1;
       });
   
-      const csvData = mergedData.map(({ email, name, isPaid, isVerified, pertanyaan }:any) => {
+      const csvData = mergedData.map(({ email, name, isPaid, isVerified, pertanyaan, openAnswer }:any) => {
         const questionsString = Array.isArray(pertanyaan)
           ? pertanyaan.map(({ pertanyaan, jawaban }, index) => `${index + 1}.${pertanyaan} = ${jawaban}`).join(', ')
           : '';
-        return { email, name, isPaid, isVerified, questions: questionsString };
+
+        const openQuestionsRaw = openAnswer ? Object.entries(openAnswer).map(([key, v]:any) => ({ openQuestions: key, jawaban: v })) : [];
+
+        const openQuestions = openQuestionsRaw.map(({ openQuestions, jawaban }, index) => `${index + 1}.${openQuestions} = ${Array.isArray(jawaban) ? jawaban?.join(', ') : jawaban}`).join(', ');
+        
+        return { email, name, isPaid, isVerified, questions: questionsString, openQuestions };
       });
 
       return csvData;
@@ -129,15 +137,20 @@ export const Users: React.FC = () => {
       const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
-      const mergedData = newData1.map(({ email, name, isPaid, isVerified, uid }:any) => {
+      const mergedData = newData1.map(({ email, name, isPaid, isVerified, uid, openAnswer }:any) => {
         const matchingData2 = newData2.find((data2:any) => data2.id === uid);
+
+        const openQuestionsRaw = openAnswer ? Object.entries(openAnswer).map(([key, v]:any) => ({ openQuestions: key, jawaban: v })) : [];
+
+        const openQuestions = openQuestionsRaw.map(({ openQuestions, jawaban }, index) => `${index + 1}.${openQuestions} = ${Array.isArray(jawaban) ? jawaban?.join(', ') : jawaban}`).join(', ');
 
         return {
           email,
           name,
           isPaid,
           isVerified,
-          questions: matchingData2?.answeres
+          questions: matchingData2?.answeres,
+          openQuestions
         };
   
       });
