@@ -94,8 +94,6 @@ export const Users: React.FC = () => {
       const newData1:any = users.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(usersOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       const newData2:any = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
-      console.log(newData1);
-
       const mergedData = newData1.map((data1:any) => {
         const matchingData2 = newData2.find((data2:any) => data2.id === data1.uid);
   
@@ -140,9 +138,9 @@ export const Users: React.FC = () => {
       const mergedData = newData1.map(({ email, name, isPaid, isVerified, uid, openAnswer }:any) => {
         const matchingData2 = newData2.find((data2:any) => data2.id === uid);
 
-        const openQuestionsRaw = openAnswer ? Object.entries(openAnswer).map(([key, v]:any) => ({ openQuestions: key, jawaban: v })) : [];
-
-        const openQuestions = openQuestionsRaw.map(({ openQuestions, jawaban }, index) => `${index + 1}.${openQuestions} = ${Array.isArray(jawaban) ? jawaban?.join(', ') : jawaban}`).join(', ');
+        const openQuestions = openAnswer ? Object.entries(openAnswer).map(([question, answers]:any) => {
+          return { [question]: Array.isArray(answers) ? answers.join(', ') : answers };
+        }) : [];
 
         return {
           email,
