@@ -41,9 +41,9 @@ export const Home: React.FC = () => {
       const usersInfo = userInfo.docs.map((doc) => ({ ...doc.data(), id: doc.id })).concat(userInfoOld.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       
       const totalUsersOld = snapshot.data().count;
-      const totalMale = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'Male').length;
-      const totalFemale = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'Female').length;
-      const totalLgbt = usersInfo.filter((entry:any)=> entry?.answeres['You\'re seeking:'] === 'LGBTQIA+').length;
+      const totalMale = usersInfo.filter((entry:any)=> entry?.answeres?.['You are:'] === 'Male').length;
+      const totalFemale = usersInfo.filter((entry:any)=> entry?.answeres?.['You are:'] === 'Female').length;
+      const totalLgbt = usersInfo.filter((entry:any)=> entry?.answeres?.['You are:'] === 'LGBTQIA+').length;
 
       setCount({ totalUsers:totalUsersOld, male: totalMale, female: totalFemale, lgbt: totalLgbt });
     };
