@@ -55,8 +55,6 @@ export const MatchPeople: React.FC = () => {
     [],
   );
 
-  console.log(ENV.FIREBASE_PUSH_NOTIFICATION_API);
-
   const getListMatchData = useCallback(async () => {
     setLoading(prev => ({ ...prev, loadingMatchUser: true }));
     const res = await getDocs(collection(db, 'Matches'));
