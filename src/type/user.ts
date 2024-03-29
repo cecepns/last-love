@@ -1,4 +1,5 @@
 export interface User {
+	id?: string;
 	audioUrl: string;
 	email: string;
 	identity: string[];

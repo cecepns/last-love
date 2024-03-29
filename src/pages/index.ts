@@ -1,5 +1,6 @@
 export * from './Home';
 export * from './Login';
+export * from './MatchPeople';
 export * from './SendNotification';
 export * from './Users';
 export * from './UserDetail';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Questions, Login, Users, UserDetail, Quotes, SendNotification, ResetPassword } from '@/pages';
+import { Home, Questions, Login, Users, UserDetail, Quotes, SendNotification, ResetPassword, MatchPeople } from '@/pages';
 import { Icon } from '@/components/atoms';
 
 export interface PageRoutes {
@@ -53,6 +53,12 @@ export const routes: Layout[] = [
         name: 'send notification',
         path: '/send-notification',
         element: <SendNotification />,
+      },
+      {
+        icon: <Icon type="solid" name="user-group" className="text-white"/>,
+        name: 'match people',
+        path: '/match-people',
+        element: <MatchPeople />,
       },
     ],
   },

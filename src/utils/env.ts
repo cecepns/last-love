@@ -1,4 +1,6 @@
 export const ENV = {
   API_URL: import.meta.env.VITE_GRAPHQL_API_URL,
+  SERVER_KEY: import.meta.env.VITE_FIREBASE_SERVER_KEY,
+  FIREBASE_PUSH_NOTIFICATION_API: import.meta.env.VITE_FIREBASE_PUSH_NOTIFICATION_API,
 };
   

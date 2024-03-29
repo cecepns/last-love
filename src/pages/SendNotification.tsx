@@ -130,7 +130,7 @@ export const SendNotification: React.FC = () => {
           <Input label="Title" className="h-11" value={form.title} onChange={inputChangeHandler('title')} />
         </div>
         <div className="w-full min-w-[200px] h-24">
-          <Input isTextArea label="Title" className="h-24" value={form.body} onChange={inputChangeHandler('body')} />
+          <Input isTextArea label="Description" className="h-24" value={form.body} onChange={inputChangeHandler('body')} />
         </div>
         <div className="w-full min-w-[200px] h-11">
           <Button className="h-11 w-full" disabled={loadingNotif} onClick={handleSendNotif}>
