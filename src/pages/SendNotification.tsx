@@ -3,7 +3,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { Button, Loading } from '@/components/atoms';
 import { Input } from '@/components/molecules';
 import Select, { CSSObjectWithLabel, MultiValue } from 'react-select';
-import { ENV, useData, usePostData } from '@/utils';
+import { ENV, pushNotification, useData, usePostData } from '@/utils';
 import { UserNotif, UserResponseNotif } from '@/type';
 
 const initialFormValues: FormType = {
@@ -54,14 +54,22 @@ export const SendNotification: React.FC = () => {
     setLoading(true);
     try {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const response = await usePostData<ResponseSendNotif>(`${ENV.API_URL}/v1/notifications/send`, form);
+      form.tokens.map(token => {
+        pushNotification({
+          to: token,
+          notification: {
+            title: form.title,
+            body: form.body,
+          },
+        });
+      });
       setLoading(false);
       setListUsers([]);
       setForm(initialFormValues);
-      alert(`Notification was successfully sent to ${response.successCount} people, Notification failed to send ${response.failureCount} people`);
+      alert('Success send notifications');
     } catch (error) {
+      alert('Failed send notifications');
       setLoading(false);
-      throw error;
     }    
   }, [form]);
 
