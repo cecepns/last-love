@@ -3,7 +3,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { Button, Loading } from '@/components/atoms';
 import { Input } from '@/components/molecules';
 import Select, { CSSObjectWithLabel, MultiValue } from 'react-select';
-import { ENV, pushNotification, useData, usePostData } from '@/utils';
+import { ENV, pushNotification, useData } from '@/utils';
 import { UserNotif, UserResponseNotif } from '@/type';
 
 const initialFormValues: FormType = {
