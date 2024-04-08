@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CsvDownloader from 'react-csv-downloader';
@@ -10,7 +10,8 @@ import { User, UserResponse } from '@/type';
 import { Button, Icon, Typography } from '@/components/atoms';
 import { Table } from '@/components/molecules';
 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+
 import { db } from '@/config';
 
 export const Users: React.FC = () => {
@@ -185,6 +186,24 @@ export const Users: React.FC = () => {
       alert(error);
     }
   }, [fetchDataFromFirestoreJson]);
+
+  useEffect(() => {
+    // const fn = async () => {
+    //   console.log('start');
+    //   const citiesRef = collection(db, 'Users');
+    //   const q = query(citiesRef, where('email', '==', 'baccatoyin@gmail.com'));
+    //   const querySnapshot = await getDocs(q);
+
+    //   console.log('query', querySnapshot);
+
+    //   querySnapshot.forEach((doc) => {
+    //     // doc.data() is never undefined for query doc snapshots
+    //     console.log(doc.id, ' => ', doc.data());
+    //   });
+    // };
+
+    // fn();
+  }, []);
 
   return (
     <div className="mt-12">

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Button } from '@/components/atoms';
-import { Input, Table } from '@/components/molecules';
+import { Button, Icon } from '@/components/atoms';
+import { Input, Modal, Table } from '@/components/molecules';
 import Select from 'react-select';
 import { UserNotif } from '@/type';
 import { collection, doc, getDocs, setDoc, updateDoc, } from 'firebase/firestore';
 import { db } from '@/config';
-import { ENV, generateRandomString, pushNotification } from '@/utils';
+import { generateRandomString, parseEmailToText, pushNotification } from '@/utils';
+import classNames from 'classnames';
 
 const initialFormValues: FormType = {
   conversationChannel: '',
@@ -43,10 +44,13 @@ export const MatchPeople: React.FC = () => {
     loadingFetch: false,
     loadingMatch: false,
     loadingMatchUser: false,
+    loadingConversation: false,
   });
   const [form, setForm] = useState<FormType>(initialFormValues);
   const [listUsers, setListUsers] = useState<UserNotif[]>([]);
   const [listMatch, setListMatch] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [modal, setModal] = useState<boolean>(false);
 
   const inputChangeHandler = useCallback(
     (name: string) => (value: string | boolean | undefined) => {
@@ -61,6 +65,7 @@ export const MatchPeople: React.FC = () => {
 
     const matches:any = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     setLoading(prev => ({ ...prev, loadingMatchUser: false }));
+
     setListMatch(matches);
   }, []);
 
@@ -78,6 +83,7 @@ export const MatchPeople: React.FC = () => {
         user2: form.user2.uid,
         emailUser1: form.user1.email,
         emailUser2: form.user2.email,
+        status: 'matching',
       });
     
       // UPDATE USERS MATCH
@@ -113,6 +119,23 @@ export const MatchPeople: React.FC = () => {
     }
   }, [form.conversationChannel, form.messageNotification, form.user1.email, form.user1.token, form.user1.uid, form.user2.email, form.user2.token, form.user2.uid, getListMatchData]);
 
+  const seeConversation = useCallback(async (conversationChannel:string, user:string) => {
+    setModal(true);
+    setLoading(prev => ({ ...prev, loadingConversation: true }));
+    const querySnapshot = await getDocs(collection(db, 'Messages', conversationChannel, 'messages'));
+    setLoading(prev => ({ ...prev, loadingConversation: false }));
+    const result = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return { ...data, id: doc.id, isUser: data.name === user };
+    });
+    setConversations(result);
+  }, []);
+
+  const handleCloseConversation = useCallback(() => {
+    setModal(false);
+    setConversations([]);
+  }, []);
+
   const columnsMatch = useMemo(() => [
     {
       Header: 'No',
@@ -130,7 +153,19 @@ export const MatchPeople: React.FC = () => {
       Header: 'Email User2',
       accessor: 'emailUser2',
     },
-  ], []);
+    {
+      Header: 'See Conversation',
+      accessor: 'conversation',
+      Cell: ( data:any )=> (
+        <Button
+          onClick={() => seeConversation(data.conversationChannel, data.emailUser1)}
+        >
+          <Icon name="comment" />
+          See Conversation
+        </Button>
+      )
+    }
+  ], [seeConversation]);
 
   const tableConfig = {
     columns: columnsMatch,
@@ -165,7 +200,7 @@ export const MatchPeople: React.FC = () => {
     };
 
     fn();
-  }, []);
+  }, [listMatch]);
   
   useEffect(() => {
     getListMatchData();
@@ -232,6 +267,37 @@ export const MatchPeople: React.FC = () => {
       <div className="mt-5 border-t">
         <Table {...tableConfig}/>
       </div>
+
+      <Modal isOpen={modal} onClose={handleCloseConversation}>
+        <div className={classNames('p-5 h-[250px] w-[450px] flex-col overflow-y-auto overflow-x-hidden', {
+          'justify-center': loading.loadingConversation || conversations.length === 0
+        })}>
+          {loading.loadingConversation ? (
+            <div className="h-full flex items-center justify-center">Loading...</div>
+          ) : conversations.map((data) => (
+            <div key={data.id} className={classNames('flex justify-start', {
+              'justify-end': data?.isUser
+            })}>
+              <div className="flex space-x-3">
+                <div>
+                  <p>{parseEmailToText(data.name)}</p>
+                  <p className={classNames('p-3 bg-slate-400 text-white rounded-lg break-all', {
+                    'rounded-bl-none': !data.isUser,
+                    'rounded-br-none': data.isUser
+                  })}>{data.text}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {!loading.loadingConversation && conversations.length === 0 && (
+            <div className="h-full flex items-center justify-center text-center">
+              <Icon name="message-slash" className="mr-3"/>
+              No Conversations
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };

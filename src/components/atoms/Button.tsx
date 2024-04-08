@@ -22,7 +22,7 @@ export declare type size = 'sm' | 'md' | 'lg';
 
 export const Button: React.FC<ButtonProps> = memo(({ children, className, variant = 'primary', disabled, ...props }) => {
 
-  const buttonCls = classNames('middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg  flex items-center gap-4 capitalize', {
+  const buttonCls = classNames('middle none font-sans font-bold center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg  flex items-center gap-2 capitalize', {
     [`${className}`]: !!className,
     'bg-gradient-to-tr from-blue-600 to-blue-400 from-blue-600 to-blue-400 shadow-blue-500/40 hover:shadow-lg hover:shadow-blue-500/40 active:opacity-[0.85] w-full': variant === 'gradient',
     'bg-transparent': variant === 'text',
