@@ -1,35 +1,57 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CsvDownloader from 'react-csv-downloader';
 import moment from 'moment';
 
-import { ENV } from '@/utils/env';
-import { downloadJson, useData } from '@/utils';
-import { User, UserResponse } from '@/type';
+import { downloadJson } from '@/utils';
+import { User } from '@/type';
 import { Button, Icon, Typography } from '@/components/atoms';
 import { Table } from '@/components/molecules';
 
-import { collection, getDocs } from 'firebase/firestore';
+import { DocumentSnapshot, collection, getDocs } from 'firebase/firestore';
 
 import { db } from '@/config';
+import { useFirebase } from '@/hooks';
+import { debounce } from 'lodash';
 
 export const Users: React.FC = () => {
   const [loadingDownloadFile, setloadingDownloadFile] = useState({
     csv: false,
     json: false,
   });
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
+  const [keywordSearch, setKeywordSearch] = useState<string>('');
   const navigate = useNavigate();
+  const cursors = useRef<Map<number, DocumentSnapshot>>(new Map());
 
-  const { data, loading } = useData<UserResponse>(`${ENV.API_URL}/v1/users?page=${page}&limit=10`);
+  const { data, loading, totalPages } = useFirebase({
+    collectionName: 'Users',
+    fieldSearch: 'email',
+    keywordSearch,
+    cursor: cursors.current.get(page),
+  });
 
-  const users = useMemo(()=> data?.users.filter((v) => v.email !== 'admin.lastlove@gmail.com') ?? [], [data?.users]);
-  const totalPages = useMemo(()=> data?.totalPages ?? 0, [data?.totalPages]);
+  // console.log(data.docs);
+
+  const tasks = useMemo(() => {
+    return data?.docs?.map((doc:any) => doc.data()) ?? [];
+  }, [data?.docs]);
 
   const handleShowDetail = useCallback((value: string) => {
     navigate('/dashboard/users/' + value);
   }, [navigate]);
+
+  const handleChange = useCallback((v:string) => {
+    cursors.current.set(
+      page + 1,
+      data.docs[data.docs.length - 1]
+    );
+    const debouncedSetKeywordSearch = debounce(() => {
+      setKeywordSearch(v);
+    }, 2000);
+    debouncedSetKeywordSearch();
+  }, [data.docs, page]);
 
   const columnDataUsers = useMemo(() => [
     { displayName: 'Email', id: 'email' },
@@ -73,14 +95,19 @@ export const Users: React.FC = () => {
 
   const handleChangePage = useCallback((val:number) => {
     setPage(val);
-  }, []);
+    cursors.current.set(
+      page + 1,
+      data.docs[data.docs.length - 1]
+    );
+  }, [data.docs, page]);
 
   const tableConfig = {
     columns: columnsCarrier,
-    data: users,
+    data: tasks,
     page,
     loading,
-    totalPages,
+    totalPages: Math.floor(totalPages / 10),
+    onChangeSearch: (v:string) => handleChange(v),
     setCurrentPage: (val: number) => handleChangePage(val)
   };
 
@@ -186,24 +213,6 @@ export const Users: React.FC = () => {
       alert(error);
     }
   }, [fetchDataFromFirestoreJson]);
-
-  // useEffect(() => {
-  //   const fn = async () => {
-  //     console.log('start');
-  //     const citiesRef = collection(db, 'Users');
-  //     const q = query(citiesRef, where('email', '==', 'baccatoyin@gmail.com'));
-  //     const querySnapshot = await getDocs(q);
-
-  //     console.log('query', querySnapshot);
-
-  //     querySnapshot.forEach((doc) => {
-  //       // doc.data() is never undefined for query doc snapshots
-  //       console.log(doc.id, ' => ', doc.data());
-  //     });
-  //   };
-
-  //   fn();
-  // }, []);
 
   return (
     <div className="mt-12">

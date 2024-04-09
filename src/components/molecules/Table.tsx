@@ -19,6 +19,7 @@ export interface TableProps {
   isConvertExcel?: boolean;
   loading?: boolean;
   setCurrentPage?: (value:number) => void;
+  onChangeSearch?: (value:string) => void;
 }
 
 export const Table: React.FC<TableProps> = memo(({
@@ -27,6 +28,7 @@ export const Table: React.FC<TableProps> = memo(({
   totalPages,
   page,
   setCurrentPage,
+  onChangeSearch,
   loading = false,
   isConvertExcel = false
 }) => {
@@ -61,6 +63,7 @@ export const Table: React.FC<TableProps> = memo(({
         )
       );
     }
+
     return [];
    
   }, [columns, data, getNestedValue, searchTerm]);
@@ -77,16 +80,24 @@ export const Table: React.FC<TableProps> = memo(({
     return newObj;
   });
 
-  const changePage = (page: number) => {
+  const changePage = useCallback((page: number) => {
     if(setCurrentPage) {
       setCurrentPage(page);
     }
-  };
+  }, [setCurrentPage]);
+
+  const handleChangeSearch = useCallback((v: string) => {
+    if(onChangeSearch) {
+      onChangeSearch(v);
+    } else {
+      setSearchTerm(v);
+    }
+  }, [onChangeSearch]);
 
   const visiblePaginationNumbers = generatePaginationNumbers(
     page ?? 1,
     totalPages ?? 1,
-    5 // Jumlah angka paginasi yang ingin ditampilkan sebelum dan sesudah titik-titik
+    5
   );
 
   return (
@@ -94,7 +105,7 @@ export const Table: React.FC<TableProps> = memo(({
       <div className="p-6 overflow-x-scroll px-0 pt-0 pb-2">
         <div className="flex justify-end items-center my-5 space-x-4">
           {isConvertExcel && <Button onClick={() => convertToExcel(columnsExcel, bodyExcel)} variant="success" className="rounded"> <Icon name="file-excel"/> </Button>}
-          <Input label="Search" className="max-w-[210px]" onChange={setSearchTerm}/>
+          <Input label="Search" className="max-w-[210px]" onChange={handleChangeSearch}/>
         </div>
         
         <table className="w-full min-w-[640px] table-auto" ref={tableRef}>

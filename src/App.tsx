@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 
 import { Auth, Dashboard } from '@/layouts';
 import { useSession } from '@/hooks';
@@ -9,6 +9,9 @@ function App() {
   const navigate = useNavigate();
   const [, setSesstion] = useSession();
 
+  const location = useLocation();
+  const { pathname } = location;
+
   useEffect(() => {
     const initFn = async () => {
       const sessionToken = localStorage.getItem('sessionToken');
@@ -17,7 +20,9 @@ function App() {
         const sessionAccount = localStorage.getItem('sessionAccount');
         if(sessionAccount) {
           setSesstion(JSON.parse(sessionAccount));
-          navigate('dashboard/home');
+          if(pathname.includes('auth')) {
+            navigate('dashboard/home');
+          }
         }
       }
     };
@@ -25,7 +30,7 @@ function App() {
       setIsInit(true);
       initFn();
     }
-  }, [isInit, navigate, setSesstion]);
+  }, [isInit, navigate, pathname, setSesstion]);
   
   return (
     <Routes>
