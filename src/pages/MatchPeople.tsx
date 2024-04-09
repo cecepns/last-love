@@ -9,21 +9,6 @@ import { db } from '@/config';
 import { generateRandomString, parseEmailToText, pushNotification } from '@/utils';
 import classNames from 'classnames';
 
-const initialFormValues: FormType = {
-  conversationChannel: '',
-  user1: {
-    uid: '',
-    token: '',
-    email: '',
-  },
-  user2: {
-    uid: '',
-    token: '',
-    email: '',
-  },
-  messageNotification: '',
-};
-
 type FormType = {
   conversationChannel: string;
   user1: {
@@ -37,6 +22,25 @@ type FormType = {
     email: string;
   };
   messageNotification: string;
+  titleMatched: string;
+  messageNotifcationMatched: string;
+};
+
+const initialFormValues: FormType = {
+  conversationChannel: '',
+  user1: {
+    uid: '',
+    token: '',
+    email: '',
+  },
+  user2: {
+    uid: '',
+    token: '',
+    email: '',
+  },
+  messageNotification: '',
+  titleMatched: '',
+  messageNotifcationMatched: '',
 };
 
 export const MatchPeople: React.FC = () => {  
@@ -50,7 +54,8 @@ export const MatchPeople: React.FC = () => {
   const [listUsers, setListUsers] = useState<UserNotif[]>([]);
   const [listMatch, setListMatch] = useState<any[]>([]);
   const [conversations, setConversations] = useState<any[]>([]);
-  const [modal, setModal] = useState<boolean>(false);
+  const [modal, setModal] = useState<string>('');
+  const [emailNotifList, setEmailNotifList] = useState<any[]>([]);
 
   const inputChangeHandler = useCallback(
     (name: string) => (value: string | boolean | undefined) => {
@@ -120,7 +125,7 @@ export const MatchPeople: React.FC = () => {
   }, [form.conversationChannel, form.messageNotification, form.user1.email, form.user1.token, form.user1.uid, form.user2.email, form.user2.token, form.user2.uid, getListMatchData]);
 
   const seeConversation = useCallback(async (conversationChannel:string, user:string) => {
-    setModal(true);
+    setModal('conversations');
     setLoading(prev => ({ ...prev, loadingConversation: true }));
     const querySnapshot = await getDocs(collection(db, 'Messages', conversationChannel, 'messages'));
     setLoading(prev => ({ ...prev, loadingConversation: false }));
@@ -131,10 +136,39 @@ export const MatchPeople: React.FC = () => {
     setConversations(result);
   }, []);
 
-  const handleCloseConversation = useCallback(() => {
-    setModal(false);
+  const handleCloseModal = useCallback(() => {
+    setModal('');
     setConversations([]);
   }, []);
+
+  const showModalNotifications = useCallback((email1:string, email2:string) => {
+    setModal('notifications');
+    const userMatches = listUsers.filter((v) => v.label === email1 || v.label === email2);
+
+    setEmailNotifList(userMatches);
+  }, [listUsers]);
+
+  const handleSendNotification = useCallback(() => {
+    try {
+      emailNotifList.map((v:any) => {
+        pushNotification({
+          to: v.value?.token,
+          notification: {
+            title: form.titleMatched,
+            body: form.messageNotifcationMatched,
+          },
+        });
+      });
+      setModal('');
+      setForm(prev => ({ ...prev, messageNotifcationMatched: '' }));
+      setTimeout(() => {
+        alert('Success send notifications');
+      }, 500);
+    } catch (error) {
+      alert('Failed send notifications');
+    }
+
+  }, [emailNotifList, form.messageNotifcationMatched, form.titleMatched]);
 
   const columnsMatch = useMemo(() => [
     {
@@ -157,15 +191,24 @@ export const MatchPeople: React.FC = () => {
       Header: 'See Conversation',
       accessor: 'conversation',
       Cell: ( data:any )=> (
-        <Button
-          onClick={() => seeConversation(data.conversationChannel, data.emailUser1)}
-        >
-          <Icon name="comment" />
+        <div className="space-y-5">
+          <Button
+            onClick={() => seeConversation(data.conversationChannel, data.emailUser1)}
+          >
+            <Icon name="comment" />
           See Conversation
-        </Button>
+          </Button>
+          <Button
+            variant="blue"
+            onClick={() => showModalNotifications(data.emailUser1, data.emailUser2)}
+          >
+            <Icon name="bell" />
+          Send Notification
+          </Button>
+        </div>
       )
     }
-  ], [seeConversation]);
+  ], [seeConversation, showModalNotifications]);
 
   const tableConfig = {
     columns: columnsMatch,
@@ -268,36 +311,63 @@ export const MatchPeople: React.FC = () => {
         <Table {...tableConfig}/>
       </div>
 
-      <Modal isOpen={modal} onClose={handleCloseConversation}>
-        <div className={classNames('p-5 h-[250px] w-[450px] flex-col overflow-y-auto overflow-x-hidden', {
-          'justify-center': loading.loadingConversation || conversations.length === 0
-        })}>
-          {loading.loadingConversation ? (
-            <div className="h-full flex items-center justify-center">Loading...</div>
-          ) : conversations.map((data) => (
-            <div key={data.id} className={classNames('flex justify-start', {
-              'justify-end': data?.isUser
-            })}>
-              <div className="flex space-x-3">
-                <div>
-                  <p>{parseEmailToText(data.name)}</p>
-                  <p className={classNames('p-3 bg-slate-400 text-white rounded-lg break-all', {
-                    'rounded-bl-none': !data.isUser,
-                    'rounded-br-none': data.isUser
-                  })}>{data.text}</p>
+      {modal === 'conversations' && (
+        <Modal isOpen={modal === 'conversations'} onClose={handleCloseModal}>
+          <div className={classNames('p-5 h-[250px] w-[450px] flex-col overflow-y-auto overflow-x-hidden', {
+            'justify-center': loading.loadingConversation || conversations.length === 0
+          })}>
+            {loading.loadingConversation ? (
+              <div className="h-full flex items-center justify-center">Loading...</div>
+            ) : conversations.map((data) => (
+              <div key={data.id} className={classNames('flex justify-start', {
+                'justify-end': data?.isUser
+              })}>
+                <div className="flex space-x-3">
+                  <div>
+                    <p>{parseEmailToText(data.name)}</p>
+                    <p className={classNames('p-3 bg-slate-400 text-white rounded-lg break-all', {
+                      'rounded-bl-none': !data.isUser,
+                      'rounded-br-none': data.isUser
+                    })}>{data.text}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {!loading.loadingConversation && conversations.length === 0 && (
-            <div className="h-full flex items-center justify-center text-center">
-              <Icon name="message-slash" className="mr-3"/>
+            {!loading.loadingConversation && conversations.length === 0 && (
+              <div className="h-full flex items-center justify-center text-center">
+                <Icon name="message-slash" className="mr-3"/>
               No Conversations
-            </div>
-          )}
-        </div>
-      </Modal>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {modal === 'notifications' && (
+        <Modal
+          isOpen={modal === 'notifications'}
+          onClose={handleCloseModal}
+          closeOutside={false}
+        >
+          <div className="p-5 min-h-[250px] w-[450px] flex-col overflow-y-auto overflow-x-hidden">
+            <Input 
+              label="Title"
+              className="mt-5 h-full"
+              value={form.titleMatched}
+              onChange={inputChangeHandler('titleMatched')}
+            />
+            <Input 
+              isTextArea
+              label="Messages"
+              className="mt-5 h-full"
+              value={form.messageNotifcationMatched}
+              onChange={inputChangeHandler('messageNotifcationMatched')}
+            />
+            <Button disabled={!form.messageNotifcationMatched || !form.titleMatched} className="w-full h-11 mt-5" onClick={handleSendNotification}>Send Notifications</Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

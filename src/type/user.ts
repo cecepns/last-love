@@ -20,9 +20,18 @@ export interface UserNotif {
 	label: string;
 }
 
+export interface UserNotifMatch {
+	value: {
+		uid: string;
+		email: string;
+		token: string;
+	} | undefined | null
+	label: string;
+}
+
 export interface UserResponseNotif {
 	users: UserNotif[];
-  }
+}
 
 export interface UserResponse {
   users: User[];

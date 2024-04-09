@@ -5,20 +5,24 @@ import { Icon } from '@/components/atoms';
 
 interface ModalProps {
   className?: string;
+  closeOutside?: boolean;
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
 }
 
 export const Modal: React.FC<ModalProps> = memo(
-  ({ isOpen, onClose, className, children }) => {
+  ({ isOpen, onClose, className, children, closeOutside = true }) => {
 
     const selectRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-          onClose();
+          console.log(closeOutside);
+          if(closeOutside) {
+            onClose();
+          }
         }
       };
 
@@ -27,7 +31,7 @@ export const Modal: React.FC<ModalProps> = memo(
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
-    }, [onClose]);
+    }, [closeOutside, onClose]);
 
     const wrapperClass = classNames('fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ease-in-out', {
       'overflow-hidden opacity-100 pointer-events-auto': isOpen,
