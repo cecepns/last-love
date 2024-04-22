@@ -4,7 +4,7 @@ import { Button, Icon } from '@/components/atoms';
 import { Input, Modal, Table } from '@/components/molecules';
 import Select from 'react-select';
 import { UserNotif } from '@/type';
-import { collection, doc, getDocs, setDoc, updateDoc, } from 'firebase/firestore';
+import { collection, doc, getDocs, serverTimestamp, setDoc, updateDoc, } from 'firebase/firestore';
 import { db } from '@/config';
 import { generateRandomString, parseEmailToText, pushNotification } from '@/utils';
 import classNames from 'classnames';
@@ -24,6 +24,8 @@ type FormType = {
   messageNotification: string;
   titleMatched: string;
   messageNotifcationMatched: string;
+  emailSender: string;
+  messageCreateConv: string;
 };
 
 const initialFormValues: FormType = {
@@ -41,6 +43,8 @@ const initialFormValues: FormType = {
   messageNotification: '',
   titleMatched: '',
   messageNotifcationMatched: '',
+  emailSender: '',
+  messageCreateConv: '',
 };
 
 export const MatchPeople: React.FC = () => {  
@@ -49,6 +53,7 @@ export const MatchPeople: React.FC = () => {
     loadingMatch: false,
     loadingMatchUser: false,
     loadingConversation: false,
+    loadingCreateConversation: false,
   });
   const [form, setForm] = useState<FormType>(initialFormValues);
   const [listUsers, setListUsers] = useState<UserNotif[]>([]);
@@ -56,6 +61,7 @@ export const MatchPeople: React.FC = () => {
   const [conversations, setConversations] = useState<any[]>([]);
   const [modal, setModal] = useState<string>('');
   const [emailNotifList, setEmailNotifList] = useState<any[]>([]);
+  const [currentUserActive, setCurrentUserActive] = useState<any>([]);
 
   const inputChangeHandler = useCallback(
     (name: string) => (value: string | boolean | undefined) => {
@@ -136,6 +142,41 @@ export const MatchPeople: React.FC = () => {
     setConversations(result);
   }, []);
 
+  const handleSendMessage = useCallback(async () => {
+    const name = form.emailSender === currentUserActive?.user1 ? currentUserActive.emailUser1 : currentUserActive.emailUser2;
+
+    const message = {
+      senderID: form.emailSender,
+      text: form.messageCreateConv,
+      name: name,
+      createdAt: serverTimestamp(),
+    };
+    
+    try {
+      setLoading(prev => ({ ...prev, loadingCreateConversation: true }));
+      // await setDoc(doc(db, 'Messages', currentUserActive?.conversationChannel));
+      
+      const refChannel = doc(collection(db, 'Messages', currentUserActive?.conversationChannel, 'messages'));
+
+      await setDoc(refChannel, message);
+
+      setLoading(prev => ({ ...prev, loadingCreateConversation: false }));
+      setModal('');
+      setCurrentUserActive({});
+      setForm(prev => ({ ...prev, messageCreateConv: '' }));
+      alert('Success send message');
+    } catch (error) {
+      alert('Failed send message');
+      setLoading(prev => ({ ...prev, loadingCreateConversation: false }));
+    }
+
+  }, [currentUserActive?.conversationChannel, currentUserActive.emailUser1, currentUserActive.emailUser2, currentUserActive?.user1, form.emailSender, form.messageCreateConv]);
+
+  const showCreateConversation = useCallback(async (data:any) => {
+    setModal('create-conversations');
+    setCurrentUserActive(data);
+  }, []);
+
   const handleCloseModal = useCallback(() => {
     setModal('');
     setConversations([]);
@@ -160,7 +201,7 @@ export const MatchPeople: React.FC = () => {
         });
       });
       setModal('');
-      setForm(prev => ({ ...prev, messageNotifcationMatched: '' }));
+      setForm(prev => ({ ...prev, messageNotifcationMatched: '', titleMatched: '' }));
       setTimeout(() => {
         alert('Success send notifications');
       }, 500);
@@ -199,6 +240,13 @@ export const MatchPeople: React.FC = () => {
           See Conversation
           </Button>
           <Button
+            variant="success"
+            onClick={() => showCreateConversation(data)}
+          >
+            <Icon name="comment" />
+          Create Conversation
+          </Button>
+          <Button
             variant="blue"
             onClick={() => showModalNotifications(data.emailUser1, data.emailUser2)}
           >
@@ -208,7 +256,18 @@ export const MatchPeople: React.FC = () => {
         </div>
       )
     }
-  ], [seeConversation, showModalNotifications]);
+  ], [showCreateConversation, seeConversation, showModalNotifications]);
+
+  const currentUserActiveList = useMemo(() => (
+    [{
+      label: currentUserActive?.emailUser1,
+      value: currentUserActive?.user1,
+    },
+    {
+      label: currentUserActive?.emailUser2,
+      value: currentUserActive?.user2,
+    }]
+  ), [currentUserActive?.emailUser1, currentUserActive?.emailUser2, currentUserActive?.user1, currentUserActive?.user2]);
 
   const tableConfig = {
     columns: columnsMatch,
@@ -340,6 +399,33 @@ export const MatchPeople: React.FC = () => {
               No Conversations
               </div>
             )}
+          </div>
+        </Modal>
+      )}
+
+      {modal === 'create-conversations' && (
+        <Modal isOpen={modal === 'create-conversations'} onClose={handleCloseModal}>
+          <div className={classNames('p-5 w-[450px] flex-col overflow-y-auto overflow-x-hidden', {
+            'justify-center': loading.loadingConversation || conversations.length === 0
+          })}>
+            <div className="pt-5">
+              <Select
+                className="basic-single"
+                classNamePrefix="select"
+                placeholder="Select message from"
+                options={currentUserActiveList}
+                onChange={v => inputChangeHandler('emailSender')(v?.value)}
+                isClearable
+              />
+              <Input 
+                isTextArea
+                label="Message"
+                className="mt-5 h-full"
+                value={form.messageCreateConv}
+                onChange={inputChangeHandler('messageCreateConv')}
+              />
+              <Button disabled={loading.loadingCreateConversation} onClick={handleSendMessage}>{loading.loadingCreateConversation ? 'Loading...' : 'Send Message'}</Button>
+            </div>
           </div>
         </Modal>
       )}

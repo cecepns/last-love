@@ -24,6 +24,8 @@ function App() {
             navigate('dashboard/home');
           }
         }
+      } else {
+        navigate('/auth/signin');
       }
     };
     if (!isInit) {
