@@ -4,7 +4,7 @@ import { Button, Icon } from '@/components/atoms';
 import { Input, Modal, Table } from '@/components/molecules';
 import Select from 'react-select';
 import { UserNotif } from '@/type';
-import { collection, doc, getDocs, serverTimestamp, setDoc, updateDoc, } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc, } from 'firebase/firestore';
 import { db } from '@/config';
 import { generateRandomString, parseEmailToText, pushNotification } from '@/utils';
 import classNames from 'classnames';
@@ -137,7 +137,7 @@ export const MatchPeople: React.FC = () => {
     setLoading(prev => ({ ...prev, loadingConversation: false }));
     const result = querySnapshot.docs.map((doc) => {
       const data = doc.data();
-      return { ...data, id: doc.id, isUser: data.name === user };
+      return { ...data, id: doc.id, isUser: data.name === user, conversationChannel };
     });
     setConversations(result);
   }, []);
@@ -303,6 +303,24 @@ export const MatchPeople: React.FC = () => {
 
     fn();
   }, [listMatch]);
+
+  const handleDeleteMessage = useCallback(async (v:any) => {
+    try {
+      const validate = confirm('Are you sure want delete this message ?');
+
+      if (validate) {
+        setLoading(prev => ({ ...prev, loadingConversation: true }));
+        const res:any = await deleteDoc(doc(db, 'Messages', v?.conversationChannel, 'messages', v?.id));
+
+        const newMessages = conversations.filter(x => x.id !== v?.id);
+        setConversations(newMessages);
+        setLoading(prev => ({ ...prev, loadingConversation: false }));
+        alert('Success delete message');
+      }
+    } catch (error) {
+      alert('Failed delete message');
+    }
+  }, [conversations]);
   
   useEffect(() => {
     getListMatchData();
@@ -378,10 +396,15 @@ export const MatchPeople: React.FC = () => {
             {loading.loadingConversation ? (
               <div className="h-full flex items-center justify-center">Loading...</div>
             ) : conversations.map((data) => (
-              <div key={data.id} className={classNames('flex justify-start', {
+              <div key={data.id} className={classNames('flex justify-start space-y-5', {
                 'justify-end': data?.isUser
               })}>
-                <div className="flex space-x-3">
+                <div className="flex space-x-3 relative space-y-5">
+                  <div onClick={() => handleDeleteMessage(data)} className={classNames('absolute -left-2 bottom-3  cursor-pointer', {
+                    '-right-2 bottom-3': data?.isUser
+                  })}>
+                    <Icon name="trash" type="solid" size="sm" className="text-red-700" />
+                  </div>
                   <div>
                     <p>{parseEmailToText(data.name)}</p>
                     <p className={classNames('p-3 bg-slate-400 text-white rounded-lg break-all', {

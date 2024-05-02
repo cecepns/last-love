@@ -48,7 +48,7 @@ export const Modal: React.FC<ModalProps> = memo(
         <div className="modal relative w-auto my-6 mx-auto">
           <div className="modal-content bg-white shadow-lg rounded-lg p-5" ref={selectRef}>
             <button
-              className="absolute flex items-center bg-primary rounded-full p-2 w-[35px] h-[35px] top-0 right-0 m-3 text-gray-500 hover:text-gray-700"
+              className="absolute z-10 flex items-center bg-primary rounded-full p-2 w-[35px] h-[35px] top-0 right-0 m-3 text-gray-500 hover:text-gray-700"
               onClick={onClose}
             >
               <Icon name="xmark" className="text-white" />
