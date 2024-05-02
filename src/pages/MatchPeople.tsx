@@ -318,6 +318,7 @@ export const MatchPeople: React.FC = () => {
         alert('Success delete message');
       }
     } catch (error) {
+      setLoading(prev => ({ ...prev, loadingConversation: false }));
       alert('Failed delete message');
     }
   }, [conversations]);
